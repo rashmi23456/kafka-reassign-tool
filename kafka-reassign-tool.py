@@ -143,10 +143,10 @@ def reassign(assignments, id):
         logging.info("starting reassignment of partitions")
         begin_reassignment(file_path, next_throttle(0))
         logging.info("started reassignment of partitions")
-        time.sleep(5)
 
     retry_count = 0
     while True:
+        time.sleep(retry_after)
         (in_progress, completed, stdout, stderr) = verify_assignment(file_path)
         if completed == partitions:
             logging.info("reassignment completed successfully")
@@ -156,11 +156,10 @@ def reassign(assignments, id):
         else:
             raise Exception("reassignment failed.\nstdout:\n%s\nstderr:\n%s", "\n".join(stdout), "\n".join("stderr"))
         retry_count = retry_count + 1
-        time.sleep(retry_after)
         if retry_count % 2 == 0 and retry_count < (2 * len(throttle)):
             iteration = retry_count // 2
             new_throttle = next_throttle(iteration)
-            logging.info("changing throttle")
+            logging.info("changing throttle to: %s", new_throttle)
             change_throttle(file_path, new_throttle)
             logging.info("changed throttle successfully")
 
