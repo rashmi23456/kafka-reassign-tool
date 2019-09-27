@@ -17,6 +17,7 @@ kafka_root = None
 zookeeper_url = None
 input_assignment = None
 throttle = None
+throttle_getter = None
 retry_after = None
 
 
@@ -164,6 +165,11 @@ def reassign(assignments, id):
             logging.info("changed throttle successfully")
 
 
+def load_throttle_from_file():
+    with open('throttle.config', 'r') as f:
+        return json.load(f)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--kafka-home", help="Root directory of the Kafka installation. Default: {}".format(
@@ -172,7 +178,7 @@ if __name__ == "__main__":
         "--zookeeper", help="The connection string for the zookeeper connection. If not specified, an attempt to read it from Kafka config file is made")
     parser.add_argument("input", help="File containing partition assignment")
     parser.add_argument(
-        "throttle", help="Replication throttle in B/s", type=str)
+        "--throttle", help="Replication throttle in B/s. If not given, throttle.config file will be loaded", type=str, default=None)
     parser.add_argument("--retry-after", help="Retry duration in sec after which the tool should look for completion status again",
                         type=int, default=DEFAULT_RETRY_AFTER)
     parser.add_argument("--debug", help="For debug logs", action="store_true")
@@ -184,9 +190,16 @@ if __name__ == "__main__":
     input_file = args.input
     with open(args.input, 'r') as f:
         input_assignment = json.load(f)
-    throttle = [int(x) for x in args.throttle.split(",")]
     retry_after = args.retry_after
     set_logger(args.debug)
+
+    if(args.throttle is None):
+        throttle_getter = load_throttle_from_file
+    else:
+        t = [int(x) for x in args.throttle.split(",")]
+        throttle_getter = lambda : t
+
+    throttle = throttle_getter()
 
     logging.info("Using:")
     logging.info("kafka root: %s", kafka_root)
@@ -195,5 +208,9 @@ if __name__ == "__main__":
     logging.info("first throttle: %s", next_throttle(0))
     logging.info("retry after: %s", retry_after)
 
+
+
     for i in range(0, len(input_assignment)):
+        # refetch throttle values
+        throttle = throttle_getter()
         reassign(input_assignment[i], i)
