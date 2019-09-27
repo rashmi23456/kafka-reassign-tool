@@ -166,7 +166,7 @@ def reassign(assignments, id):
 
 
 def load_throttle_from_file():
-    with open('throttle.config', 'r') as f:
+    with open('throttle.json', 'r') as f:
         return json.load(f)
 
 
@@ -178,7 +178,7 @@ if __name__ == "__main__":
         "--zookeeper", help="The connection string for the zookeeper connection. If not specified, an attempt to read it from Kafka config file is made")
     parser.add_argument("input", help="File containing partition assignment")
     parser.add_argument(
-        "--throttle", help="Replication throttle in B/s. If not given, throttle.config file will be loaded", type=str, default=None)
+        "--throttle", help="Replication throttle in B/s. If not given, throttle.json file will be loaded", type=str, default=None)
     parser.add_argument("--retry-after", help="Retry duration in sec after which the tool should look for completion status again",
                         type=int, default=DEFAULT_RETRY_AFTER)
     parser.add_argument("--debug", help="For debug logs", action="store_true")
