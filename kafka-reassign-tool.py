@@ -190,7 +190,7 @@ if __name__ == "__main__":
 
     logging.info("Using:")
     logging.info("kafka root: %s", kafka_root)
-    logging.info("zk url: %s", zookeeper_url)
+    logging.info("zk url: %s", get_zk_url())
     logging.info("throttle: %s", throttle)
     logging.info("first throttle: %s", next_throttle(0))
     logging.info("retry after: %s", retry_after)
