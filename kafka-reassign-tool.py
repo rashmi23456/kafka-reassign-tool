@@ -196,7 +196,7 @@ if __name__ == "__main__":
     if(args.throttle is None):
         throttle_getter = load_throttle_from_file
     else:
-        t = [int(x) for x in args.throttle.split(",")]
+        t = [int(x) for x in json.loads(args.throttle)]
         throttle_getter = lambda : t
 
     throttle = throttle_getter()
