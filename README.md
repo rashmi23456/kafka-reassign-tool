@@ -30,7 +30,7 @@ optional arguments:
 
 Command:
 ```
-python kafka-reassign_tool.py --input input_assignment --throttle [1000000,10000000] --retry-after 30
+python kafka-reassign-tool.py --input input_assignment --throttle [1000000,10000000] --retry-after 30
 ```
 
 Content of `input_assignment`:
